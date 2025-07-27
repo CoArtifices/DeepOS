@@ -26,53 +26,64 @@ This means the **application's complexity resides entirely within the document**
 
 -----
 
-## 🛠️ DeepOS Architecture
+## 🛠️ DeepOS Architecture: How It Works
 
 **DeepOS** operates under a modular **agent-based design**, with a **Large Language Model (LLM)** at its core orchestrating interactions.
 
 ```
-+---------------------+      +------------------------+
-|   User (CLI/Web)    | <--> |     UI Module          |
-+---------------------+      +------------------------+
-           |                             ^
-           v                             |
-+---------------------+                  |
-| Input Preprocessor  |                  |
-+---------------------+                  |
-           |                             |
-           v                             |
-+---------------------+                  |  (Responses,
-|  Central Agent (LLM)| <-----------------+   App State)
-|    (Orchestrator)   |                  |
-+---------------------+                  |
-    |  ^   ^   ^                         |
-    |  |   |   |                         |
-    v  |   |   |                         v
-+----------+----------+      +-----------------------+
-|   App Parser        |      |  App State Manager    |
-| (Interprets Documents)|    |  (App's Memory)       |
-+-----------------------+      +-----------------------+
-    |                                   ^
-    v                                   |
-+-----------------------+               |
-|  Execution Engine     | <-------------+
-|   (Secure Sandbox)    |
-+-----------------------+
-    |
-    v
-+-----------------------+
-|   System APIs         |
-| (Generic Functions)   |
-+-----------------------+
++---------------------+           +--------------------------+
+|      USER           |           |   1. INTERFACE MODULE    |
+| (CLI / Web UI)      | <-------> | (Handles User Input/Output)|
++---------------------+           +--------------------------+
+           |                                  ^
+           | User Query / Commands            | DeepOS Responses / App Output
+           v                                  |
++-----------------------------------------------------------+
+|               2. DEEPOS CORE (The "Brain")                |
+|               (Powered by an LLM Agent)                   |
+|                                                           |
+|  - **Interprets Intent:** Understands user commands and    |
+|    app logic from documents.                              |
+|  - **Orchestrates Actions:** Decides what needs to be done |
+|    and which modules/tools to use.                        |
+|                                                           |
++-----------------------------------------------------------+
+    |           ^           ^           ^
+    |           |           |           |
+    v           |           |           |
++-----------------+   +-----------------+   +-----------------+
+| 3. APP PARSER   |   | 4. APP STATE    |   | 5. EXECUTION    |
+| (Reads App      |   | MANAGER         |   | ENGINE          |
+|  Documents &    |   | (Manages App    |   | (Runs App Logic |
+|  Extracts Logic)|   | Data/Memory)    |   | in a Sandbox)   |
++-----------------+   +-----------------+   +-----------------+
+        |                   ^                       |
+        | App Logic/Rules   | App Data/State        | Abstract Actions/APIs
+        v                   |                       v
++-----------------------------------------------------------+
+|              6. SYSTEM APIs (DeepOS Capabilities)         |
+|              (Generic functions for apps to use)          |
++-----------------------------------------------------------+
 ```
 
-  * **UI Module:** The interaction point with the user (conversational command line or web interface).
-  * **Input Preprocessor:** Cleans and prepares user input, manages conversation context.
-  * **Central Agent (LLM):** The "brain" of **DeepOS**. It interprets intent, plans actions, and orchestrates calls to other modules. This is where the base LLM (e.g., Llama 3, Mistral) resides.
-  * **App Parser:** Reads and comprehends the structure and logic of "apps" defined in text documents.
-  * **App State Manager:** Maintains and updates the internal state of the running application (e.g., AInopoly board, calculator variables).
-  * **Execution Engine (Sandbox):** Securely executes the logical instructions extracted by the LLM from the app document, interacting with the App State Manager.
-  * **System APIs:** A set of abstract, generic functions (e.g., `transfer_value`, `set_variable`) that the Execution Engine can invoke at the app's request.
+  * **1. Interface Module:** This is where you interact with DeepOS. It takes your commands and questions and displays DeepOS's responses or the output from your running apps.
+  * **2. DeepOS Core (The "Brain"):** Powered by a Large Language Model (LLM), this is the central intelligence. It understands what you want to do (whether it's a system command or an app instruction), plans the necessary steps, and directs other modules to perform tasks.
+  * **3. App Parser:** When you load an app, this module reads its document. It extracts the rules, logic, and data (like a game's board or a table's structure) written in natural language, translating them into a format DeepOS can work with.
+  * **4. App State Manager:** This module is the "memory" for your apps. It keeps track of all the app's current data – for AInopoly, that would be player money, property ownership, board positions, etc. – and updates it as the app runs.
+  * **5. Execution Engine:** This is the "CPU" for your apps. It securely runs the specific logic and instructions provided by the app document. It takes input from the App Parser and uses the App State Manager to perform actions.
+  * **6. System APIs (DeepOS Capabilities):** These are the fundamental, generic tools DeepOS provides to all apps. Think of them as basic building blocks like "transfer value," "set variable," or "get data." The Execution Engine uses these to carry out the app's instructions.
+
+-----
+
+## 🚀 Get Started: Your First App on DeepOS
+
+The goal of **DeepOS** is to demonstrate the ability to run simple apps from documents.
+
+### **Current Features:**
+
+  * **Document-App Loading:** DeepOS can load and process text files (Markdown recommended) containing application logic.
+  * **"Hello World" Execution:** A functional example of an app that simply greets the user, defined within a document.
+  * **Simple Calculator:** An app defined in a document that can perform basic operations (like addition) based on natural language instructions.
 
 -----
 
@@ -82,7 +93,7 @@ Our journey is ambitious, and we're seeking collaboration to:
 
   * **Expand System APIs:** Add more generic functions for complex operations (list management, random number generation, date handling, etc.).
   * **Enhance Rule Language:** Develop a more robust and flexible DSL (Domain-Specific Language) for writing apps in documents, allowing for more intricate logic and complex data patterns.
-  * **State Persistence:** Enable apps to save and load their state across sessions, crucial for long-running games or management tools.
+  * **State Persistence:** Enable apps to save and load their state across sessions, which is crucial for long-running games or management tools.
   * **Complex App Support:** Enable the execution of more sophisticated applications. This could include:
       * **A simple task manager:** With rules for adding, completing, and prioritizing tasks.
       * **A basic inventory management system:** Where the document defines items, their quantities, and rules for adding/deducting stock.
